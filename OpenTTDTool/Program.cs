@@ -15,7 +15,7 @@ namespace OpenTTDTool
             XmlConfigurator.Configure();
 
             var parsedInfos = new List<NfoRowParser>();
-            using (var file = new StreamReader(@"D:\Projets\GRF\UKRS2__The_UK_Railway_Set-1.05\sprites\proj1000.nfo"))
+            using (var file = new StreamReader(@"..\..\..\GrfExampleFiles\proj1000.nfo"))
             //using (var file = new StreamReader(@"D:\Projets\GRF\2cc_TrainsInNML-1.0\sprites\2ccts.nfo"))
             {
                 while (!file.EndOfStream)
