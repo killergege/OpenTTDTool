@@ -18,5 +18,10 @@ namespace OpenTTDTool.Helpers
         {
             return int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out result);
         }
+
+        public static String ConvertToHex(int num, string format = "X2")
+        {
+            return num.ToString(format);
+        }
     }
 }

@@ -65,12 +65,56 @@ namespace OpenTTDTool.DataAnalyzers
         #region Row individual value processing
         public virtual Actions? ReadAction()
         {
-            return ReadEnum<Actions>(Constants.INDEX_ACTIONS);
+            Actions? action = ReadEnum<Actions>(Constants.INDEX_ACTIONS);
+            cleanParsedText(action);
+            return action;
         }
 
         public virtual Features? ReadFeature()
         {
             return ReadEnum<Features>(Constants.INDEX_FEATURES);
+        }
+
+        private void cleanParsedText(Actions? action)
+        {
+            switch (action)
+            {
+                case Actions.Labels:
+                    //TODO : Traiter le nettoyage de la 7ième position ici plutot que dans ReadCodeAndLabel
+                    break;
+                case Actions.Properties:
+                    List<string>  cleanParsedText = new List<string>();
+                    
+                    for(int i = 0;i<ParsedText.Count;i++)
+                    {
+                        //On vérifie les valeurs à partir de la 5ième car on ignore : la ligne, le sprite, le nb d'élement, l'action
+                        if (i < 5)
+                        {
+                            cleanParsedText.Add(ParsedText[i]);
+                        }
+                        else
+                        {
+                            int result;
+                            //TODO : Faire propre garder les guillemets ? Trouver un moyen d'identifier mieux une chaine
+                            //Si le texte n'est pas 2 charactères hexa, c'est sans doute une chaine à convertir
+                            if (ParsedText[i].Length > 2 || !IntHelper.TryConvertFromHex(ParsedText[i], out result))
+                            {
+                                /*for (int j=1;j<ParsedText[i].Length-1;j++)
+                                {*/
+                                Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
+                                enc.GetBytes(ParsedText[i]).ToList().ForEach(p => cleanParsedText.Add(IntHelper.ConvertToHex(p)));
+                            }
+                            else
+                            {
+                                cleanParsedText.Add(ParsedText[i]);
+                            }
+                        }
+                    }
+                    ParsedText = cleanParsedText;
+                    break;
+                default:
+                    break;
+            }
         }
 
         public virtual int ReadLanguage()

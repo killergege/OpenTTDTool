@@ -54,5 +54,7 @@ namespace OpenTTDTool
 
         public const int DATA_TRAIN_INDEX_NB_VEHICLES = 6;
         public const int DATA_TRAIN_INDEX_PROPERTIES = 8;
+
+        public const int CODE_PAGE_NFO = 437;
     }
 }

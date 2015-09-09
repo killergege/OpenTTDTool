@@ -18,6 +18,8 @@ namespace OpenTTDTool.Entities
         public int AirDrag { get; set; }
         public int SizeReduction { get; set; }
         public int CargoCapacity { get; set; }
+        public int LongDateOfIntroduction { get; set; }
+        public int Weight { get; set; }
 
         static Train()
         {
@@ -36,7 +38,7 @@ namespace OpenTTDTool.Entities
             PropertyDefinition.Add(0x12, new PropertyInfo());
             PropertyDefinition.Add(0x13, new PropertyInfo());
             PropertyDefinition.Add(0x15, new PropertyInfo());
-            PropertyDefinition.Add(0x16, new PropertyInfo());
+            PropertyDefinition.Add(0x16, new PropertyInfo() { PropertyName = nameof(Weight) });
             PropertyDefinition.Add(0x17, new PropertyInfo());
             PropertyDefinition.Add(0x18, new PropertyInfo());
             PropertyDefinition.Add(0x1A, new PropertyInfo());
@@ -52,7 +54,7 @@ namespace OpenTTDTool.Entities
             PropertyDefinition.Add(0x27, new PropertyInfo());
             PropertyDefinition.Add(0x28, new PropertyInfo() { Length = 2 });
             PropertyDefinition.Add(0x29, new PropertyInfo() { Length = 2 });
-            PropertyDefinition.Add(0x2A, new PropertyInfo() { Length = 4 });
+            PropertyDefinition.Add(0x2A, new PropertyInfo() { Length = 4, PropertyName = nameof(LongDateOfIntroduction) });
             PropertyDefinition.Add(0x2B, new PropertyInfo() { Length = 2 });
             PropertyDefinition.Add(0x2C, new PropertyInfo() { Length = Constants.PROPERTY_SPECIAL_LENGTH_VALUE });
             PropertyDefinition.Add(0x2D, new PropertyInfo() { Length = Constants.PROPERTY_SPECIAL_LENGTH_VALUE });
