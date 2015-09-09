@@ -12,11 +12,14 @@ namespace OpenTTDTool.DataAnalyzers
     /// </summary>
     public class DataAnalyzer
     {
+        private bool cleaned;
+
         public List<string> ParsedText { get; private set; }
 
         public DataAnalyzer(List<string> parsedText)
         {
             ParsedText = parsedText;
+            cleaned = false;
         }
 
         /// <summary>
@@ -77,30 +80,43 @@ namespace OpenTTDTool.DataAnalyzers
 
         private void cleanParsedText(Actions? action)
         {
+            if (cleaned)
+                return;
+
+            List<string> cleanParsedText;
             switch (action)
             {
                 case Actions.Labels:
-                    //TODO : Traiter le nettoyage de la 7ième position ici plutot que dans ReadCodeAndLabel
+                    int label_code;
+                    if (ReadLanguage() == Constants.DEFAULT_LANGUAGE)
+                    {
+                        if (!TryReadHexData(Constants.INDEX_IDENTIFIER_AND_LABEL, out label_code))
+                        {
+                            Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
+                            string cleanText = ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL].Substring(1);
+                            string encodedValue = IntHelper.ConvertToHex(enc.GetBytes(ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL])[0]);
+                            ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL] = cleanText;
+                            ParsedText.Insert(Constants.INDEX_IDENTIFIER_AND_LABEL, encodedValue);
+                            
+    }
+                    }
                     break;
                 case Actions.Properties:
-                    List<string>  cleanParsedText = new List<string>();
+                    cleanParsedText = new List<string>();
                     
                     for(int i = 0;i<ParsedText.Count;i++)
                     {
                         //On vérifie les valeurs à partir de la 5ième car on ignore : la ligne, le sprite, le nb d'élement, l'action
-                        if (i < 5)
+                        if (i < Constants.INDEX_CLEANABLE)
                         {
                             cleanParsedText.Add(ParsedText[i]);
                         }
                         else
                         {
-                            int result;
-                            //TODO : Faire propre garder les guillemets ? Trouver un moyen d'identifier mieux une chaine
+                            int property_code;
                             //Si le texte n'est pas 2 charactères hexa, c'est sans doute une chaine à convertir
-                            if (ParsedText[i].Length > 2 || !IntHelper.TryConvertFromHex(ParsedText[i], out result))
+                            if (ParsedText[i].Length > 2 || !IntHelper.TryConvertFromHex(ParsedText[i], out property_code))
                             {
-                                /*for (int j=1;j<ParsedText[i].Length-1;j++)
-                                {*/
                                 Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
                                 enc.GetBytes(ParsedText[i]).ToList().ForEach(p => cleanParsedText.Add(IntHelper.ConvertToHex(p)));
                             }
@@ -115,6 +131,7 @@ namespace OpenTTDTool.DataAnalyzers
                 default:
                     break;
             }
+            cleaned = true;
         }
 
         public virtual int ReadLanguage()
@@ -126,17 +143,11 @@ namespace OpenTTDTool.DataAnalyzers
         {
             var code = default(int);
             var label = default(string);
-            if (!TryReadHexData(Constants.INDEX_IDENTIFIER_AND_LABEL, out code))
+            code = ReadHexData(Constants.INDEX_IDENTIFIER);
+            if(!ignoreLabel)
             {
-                code = (int)ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL][0];
-
-                if (!ignoreLabel)
-                    label = ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL].Substring(1);
-            }
-            else
-            {
-                if (!ignoreLabel)
-                    label = ParsedText[Constants.INDEX_LABEL];
+                cleanParsedText(Actions.Labels);
+                label = ParsedText[Constants.INDEX_LABEL];
             }
             return new { Code = code, Label = label };
         }

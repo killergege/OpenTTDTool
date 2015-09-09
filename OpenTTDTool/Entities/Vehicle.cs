@@ -69,10 +69,17 @@ namespace OpenTTDTool.Entities
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Type: {this.GetType().Name}, Name: {Name}({this.DebugInfo.FirstOrDefault(d => d.Item1 == "Name")?.Item2})");
-            foreach (var prop in this.GetType().GetProperties().OrderBy(p => p.Name))
+            sb.AppendLine($"\tRaw data :");
+            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite))
             {
-                sb.AppendLine($"\t{prop.Name}: {prop.GetValue(this)} (row: {this.DebugInfo.FirstOrDefault(p=>p.Item1 == prop.Name)?.Item2 })");
+                sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)} (row: {this.DebugInfo.FirstOrDefault(p=>p.Item1 == prop.Name)?.Item2 })");
             }
+            sb.AppendLine($"\tCalculated :");
+            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => !p.CanWrite))
+            {
+                sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)}");
+            }
+
             sb.AppendLine();
             return sb.ToString();
         }

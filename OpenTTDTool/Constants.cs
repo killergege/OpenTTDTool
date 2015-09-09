@@ -44,7 +44,9 @@ namespace OpenTTDTool
         public const int INDEX_SPRITES = 1;
         public const int INDEX_ACTIONS = 3;
         public const int INDEX_FEATURES = 4;
+        public const int INDEX_CLEANABLE = 5;
         public const int INDEX_LANGUAGE = 5;
+        public const int INDEX_IDENTIFIER = 7;
         public const int INDEX_IDENTIFIER_AND_LABEL = 7;
         public const int INDEX_LABEL = 8;
 

@@ -47,9 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configs\LocalizationConfig.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataAnalyzers\DataAnalyzer.cs" />
     <Compile Include="DataAnalyzers\TrainDataAnalyzer.cs" />
+    <Compile Include="Entities\Cargo.cs" />
+    <Compile Include="Configs\GameConfig.cs" />
+    <Compile Include="Extensions\EnumExtension.cs" />
     <Compile Include="Helpers\IntHelper.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="NfoRowParser.cs" />

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using log4net.Config;
+using OpenTTDTool.Entities;
+using OpenTTDTool.Configs;
 
 namespace OpenTTDTool
 {
@@ -32,6 +34,10 @@ namespace OpenTTDTool
                         parsedInfos.Add(new NfoRowParser(ligne));
                 }
                 parsedInfos.ForEach(p => p.Parse());
+
+                //Initaliser des paramètre du jeu pour les calculs
+                GameConfig.getInstance().Multiplier = 1;
+                LocalizationConfig.getInstance().displayUnit = LocalizationConfig.SpeedUnit.Metric;
 
                 //var lister = parsedInfos.Where(p => p.Action == (int)Actions.Labels).ToList();
                 ////lister.ForEach(p => { var nom = p.ParsedText[7]; Console.WriteLine(String.Format("{0} - {1} - {2}", p.Number, (int)nom[0], nom.Substring(1))); });
