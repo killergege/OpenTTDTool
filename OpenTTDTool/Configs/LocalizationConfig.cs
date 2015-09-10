@@ -9,6 +9,15 @@ namespace OpenTTDTool.Configs
 {
     class LocalizationConfig
     {
+        #region Singleton
+        private static LocalizationConfig instance = null;
+        public static LocalizationConfig Instance
+        {
+            get { return instance = instance ?? new LocalizationConfig(); }
+        }
+        private LocalizationConfig() { }
+        #endregion
+
         public enum SpeedUnit
         {
             [Description("Imperial (mph)")]
@@ -19,21 +28,10 @@ namespace OpenTTDTool.Configs
             SI
         }
 
-        private static LocalizationConfig instance = null;
         private SpeedUnit rawUnit = SpeedUnit.Imperial;
 
         public SpeedUnit displayUnit { get; set; }
 
-        private LocalizationConfig() {
-
-        }
-
-        public static LocalizationConfig getInstance()
-        {
-            if (instance == null)
-                instance = new LocalizationConfig();
-            return instance;
-        }
 
         public int Convert(int value)
         {
@@ -87,7 +85,5 @@ namespace OpenTTDTool.Configs
 
             return System.Convert.ToInt32(targetValue);
         }
-
-
     }
 }

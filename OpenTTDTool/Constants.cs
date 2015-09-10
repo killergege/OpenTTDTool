@@ -6,6 +6,48 @@ using System.Threading.Tasks;
 
 namespace OpenTTDTool
 {
+    /// <summary>
+    /// Specs : http://newgrf-specs.tt-wiki.net/wiki/GRFActionsDetailed
+    /// </summary>
+    public enum FieldSizes
+    {
+        /// <summary>
+        /// The value is given in decimal, not hexadecimal; the size is therefore irrelevant
+        /// </summary>
+        Decimal,
+        /// <summary>
+        /// A single byte
+        /// </summary>
+        Byte,
+        /// <summary>
+        /// An extended byte (either a byte, or a word value)
+        /// Extended bytes work like this:
+        ///     To specify a value of 0..FE, simply use that byte value
+        ///     To specify a value of FF..FFFF, use a literal FF followed by the word value, e.g. for 320d (140 hex) use FF 40 01.
+        /// </summary>
+        ExtendedByte,
+        /// <summary>
+        /// A two-byte word, specified in little-endian byte order
+        /// </summary>
+        Word,
+        /// <summary>
+        /// A four-byte dword, again in little-endian byte order
+        /// </summary>
+        DoubleWord,
+        /// <summary>
+        /// Variable-length, zero terminated text string
+        /// </summary>
+        String,
+        /// <summary>
+        /// A variable length, which depends on one of the previous parameters
+        /// </summary>
+        Variable,
+        /// <summary>
+        /// B n*B
+        /// </summary>
+        MultipleBytes
+    }
+
     public enum Actions
     {
         Properties = 0x00,
@@ -46,16 +88,32 @@ namespace OpenTTDTool
         public const int INDEX_FEATURES = 4;
         public const int INDEX_CLEANABLE = 5;
         public const int INDEX_LANGUAGE = 5;
-        public const int INDEX_IDENTIFIER = 7;
-        public const int INDEX_TEXT = 8;
+        public const int INDEX_IDENTIFIER = 7; //TODO : virer
+        //public const int INDEX_TEXT = 8;
 
         public const int PROPERTY_LABEL_CODE = -0x01;
         public const string PROPERTY_SPRITE_NONE = "*";
         public const int PROPERTY_SPECIAL_LENGTH_VALUE = -0x01;
 
-        public const int DATA_TRAIN_INDEX_NB_VEHICLES = 6;
-        public const int DATA_TRAIN_INDEX_PROPERTIES = 8;
+        //public const int DATA_TRAIN_INDEX_NB_VEHICLES = 6;
+        //public const int DATA_TRAIN_INDEX_PROPERTIES = 8;
 
         public const int CODE_PAGE_NFO = 437;
+
+        public static Dictionary<FieldSizes, int?> FieldLengths
+        {
+            get;
+        } 
+            = new Dictionary<FieldSizes, int?>()
+                {
+                    { FieldSizes.Byte, 1 },
+                    { FieldSizes.Decimal, null },
+                    { FieldSizes.DoubleWord, 4 },
+                    { FieldSizes.ExtendedByte, null },
+                    { FieldSizes.MultipleBytes, null },
+                    { FieldSizes.String, 1 }, // TODO : vérifier que les chaines sont toujours lues correctement. Normalement le parseur met la chaine dans une seule et même "cellule"
+                    { FieldSizes.Variable, null },
+                    { FieldSizes.Word, 2 }
+                };
     }
 }

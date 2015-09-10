@@ -13,16 +13,12 @@ namespace OpenTTDTool
         private static VehicleManager instance;
         public static VehicleManager Instance
         {
-            get { return instance = instance ?? new VehicleManager(); } ///instance == null ? instance = new VehicleManager() : instance; }
+            get { return instance = instance ?? new VehicleManager(); }
         }
+        private VehicleManager() { }
         #endregion
 
-        public Dictionary<int, Vehicle> Vehicles { get; private set; }
-
-        private VehicleManager()
-        {
-            Vehicles = new Dictionary<int, Vehicle>();
-        }
+        public Dictionary<int, Vehicle> Vehicles { get; private set; } = new Dictionary<int, Vehicle>();        
 
         public void SetProperty(int rowNumber, int idVehicle, Features feature, int code, object value)
         {
@@ -41,10 +37,9 @@ namespace OpenTTDTool
                         break;
                     default:
                         break;
-                }                
+                }
             }
-            Vehicles[idVehicle].SetProperty(rowNumber,code, value);
-
+            Vehicles[idVehicle].SetProperty(rowNumber, code, feature, value);
         }
     }
 }

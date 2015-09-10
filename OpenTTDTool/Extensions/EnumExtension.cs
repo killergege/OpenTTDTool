@@ -12,10 +12,9 @@ namespace OpenTTDTool
     {
         public static string GetDescription(this Enum myEnum)
         {
-            FieldInfo fi = myEnum.GetType().GetField(myEnum.ToString());
+            var fi = myEnum.GetType().GetField(myEnum.ToString());
 
-            DescriptionAttribute[] attributes =
-                (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
             if (attributes != null && attributes.Length > 0)
                 return attributes[0].Description;

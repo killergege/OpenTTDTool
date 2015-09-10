@@ -8,7 +8,8 @@ namespace OpenTTDTool.Entities
 {
     public abstract class Vehicle
     {
-        protected static Dictionary<int, PropertyInfo> PropertyDefinition = new Dictionary<int, PropertyInfo>();
+        protected static Dictionary<PropertyInfoId, PropertyInfo> PropertyDefinition = new Dictionary<PropertyInfoId, PropertyInfo>();
+        protected const int MAX_COMMON_PROPERTY_ID = 0x07;
 
         public string Name { get; set; }
         public int DateOfIntroduction { get; set; }
@@ -22,13 +23,13 @@ namespace OpenTTDTool.Entities
 
         static Vehicle()
         {
-            PropertyDefinition.Add(0x00, new PropertyInfo() { Length = 2, PropertyName = nameof(DateOfIntroduction) });
-            PropertyDefinition.Add(0x02, new PropertyInfo() { PropertyName = nameof(ReliabilityDecaySpeed) });
-            PropertyDefinition.Add(0x03, new PropertyInfo() { PropertyName = nameof(VehicleLife) });
-            PropertyDefinition.Add(0x04, new PropertyInfo() { PropertyName = nameof(ModelLife) });
-            PropertyDefinition.Add(0x06, new PropertyInfo() { PropertyName = nameof(Climate) });
-            PropertyDefinition.Add(0x07, new PropertyInfo() { PropertyName = nameof(LoadingSpeed) });
-            PropertyDefinition.Add(Constants.PROPERTY_LABEL_CODE, new PropertyInfo() { PropertyName = nameof(Name) });
+            PropertyDefinition.Add(new PropertyInfoId(0x00, null), new PropertyInfo() { Length = FieldSizes.Word, PropertyName = nameof(DateOfIntroduction) });
+            PropertyDefinition.Add(new PropertyInfoId(0x02, null), new PropertyInfo() { PropertyName = nameof(ReliabilityDecaySpeed) });
+            PropertyDefinition.Add(new PropertyInfoId(0x03, null), new PropertyInfo() { PropertyName = nameof(VehicleLife) });
+            PropertyDefinition.Add(new PropertyInfoId(0x04, null), new PropertyInfo() { PropertyName = nameof(ModelLife) });
+            PropertyDefinition.Add(new PropertyInfoId(0x06, null), new PropertyInfo() { PropertyName = nameof(Climate) });
+            PropertyDefinition.Add(new PropertyInfoId(0x07, null), new PropertyInfo() { PropertyName = nameof(LoadingSpeed) });
+            PropertyDefinition.Add(new PropertyInfoId(Constants.PROPERTY_LABEL_CODE, null), new PropertyInfo() { PropertyName = nameof(Name) });
         }
 
         /// <summary>
@@ -37,11 +38,15 @@ namespace OpenTTDTool.Entities
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
-        public static int? GetDataLength(int code)
+        public static FieldSizes? GetDataLength(int code, Features? entityType)
         {
-            if (PropertyDefinition.ContainsKey(code))
+            if (code <= MAX_COMMON_PROPERTY_ID)
+                entityType = null;
+
+            var key = new PropertyInfoId(code, entityType);
+            if (PropertyDefinition.ContainsKey(key))
             {
-                return PropertyDefinition[code].Length;
+                return PropertyDefinition[key].Length;
             }
             else
             {
@@ -49,11 +54,15 @@ namespace OpenTTDTool.Entities
             }
         }
 
-        public void SetProperty(int rowNumber, int code, object value)
+        public void SetProperty(int rowNumber, int code, Features? entityType, object value)
         {
-            if (PropertyDefinition.ContainsKey(code))
+            if (code <= MAX_COMMON_PROPERTY_ID)
+                entityType = null;
+
+            var key = new PropertyInfoId(code, entityType);
+            if (PropertyDefinition.ContainsKey(key))
             {
-                var propertyName = PropertyDefinition[code].PropertyName;
+                var propertyName = PropertyDefinition[key].PropertyName;
                 if (!String.IsNullOrWhiteSpace(propertyName))
                 {
                     var type = this.GetType();
@@ -69,8 +78,8 @@ namespace OpenTTDTool.Entities
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Type: {this.GetType().Name}, Name: {Name}({this.DebugInfo.FirstOrDefault(d => d.Item1 == "Name")?.Item2})");
-            sb.AppendLine($"\tRaw data :");
-            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite))
+            sb.AppendLine($"\tRaw data (unused hidden) :");
+            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite && this.DebugInfo.Any(d=>d.Item1 == p.Name)))
             {
                 sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)} (row: {this.DebugInfo.FirstOrDefault(p=>p.Item1 == prop.Name)?.Item2 })");
             }

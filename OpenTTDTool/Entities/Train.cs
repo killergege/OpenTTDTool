@@ -28,7 +28,7 @@ namespace OpenTTDTool.Entities
         {
             get
             {
-                return string.Join(", ", getRefitListString());
+                return string.Join(", ", RefitListString);
             }
         }
 
@@ -37,7 +37,7 @@ namespace OpenTTDTool.Entities
             //TODO : do not account for multiplier if passenger
             get
             {
-                return Weight + CargoCapacity * GameConfig.getInstance().Multiplier;
+                return Weight + CargoCapacity * GameConfig.Instance.Multiplier;
             }
         }
 
@@ -47,61 +47,63 @@ namespace OpenTTDTool.Entities
             get
             {
                 double realSpeed = Speed / 1.6;
-                return LocalizationConfig.getInstance().Convert(Convert.ToInt32(realSpeed));
+                return LocalizationConfig.Instance.Convert(Convert.ToInt32(realSpeed));
             }
         }
 
-        private List<Cargo.CargoTypes> getRefitList()
+        private List<Cargo.CargoTypes> RefitList
         {
-            return Cargo.readCargoTypes((Cargo.CargoTypes)ReffitableCargo);
+            get
+            {
+                return Cargo.ReadCargoTypes((Cargo.CargoTypes)ReffitableCargo);
+            }
         }
 
-        private List<string> getRefitListString()
+        private List<string> RefitListString
         {
-            List<string> list = new List<string>();
-            getRefitList().ForEach(p => list.Add(p.GetDescription()));
-            return list;
+            get
+            {
+                return RefitList.Select(p => p.GetDescription()).ToList();
+            }
         }
 
         static Train()
         {
-            PropertyDefinition.Add(0x05, new PropertyInfo() { PropertyName = nameof(TrackType) });
-            PropertyDefinition.Add(0x09, new PropertyInfo() { Length = 2, PropertyName = nameof(Speed) });
-            PropertyDefinition.Add(0x0B, new PropertyInfo() { Length = 2, PropertyName = nameof(Power) });
-            PropertyDefinition.Add(0x0E, new PropertyInfo() { Length = 4, PropertyName = nameof(RunningCost) });
-            PropertyDefinition.Add(0x0D, new PropertyInfo() { PropertyName = nameof(RunningCostFactor) });
-            PropertyDefinition.Add(0x14, new PropertyInfo() { Length = 1, PropertyName = nameof(CargoCapacity) });
-            PropertyDefinition.Add(0x15, new PropertyInfo() { PropertyName = nameof(CargoType) });
-            PropertyDefinition.Add(0x16, new PropertyInfo() { PropertyName = nameof(Weight) });
-            PropertyDefinition.Add(0x19, new PropertyInfo() { PropertyName = nameof(TractionType) });
-            PropertyDefinition.Add(0x1F, new PropertyInfo() { PropertyName = nameof(TractiveEffort) });
-            PropertyDefinition.Add(0x20, new PropertyInfo() { PropertyName = nameof(AirDrag) });
-            PropertyDefinition.Add(0x21, new PropertyInfo() { PropertyName = nameof(SizeReduction) });
-            PropertyDefinition.Add(0x28, new PropertyInfo() { Length = 2 , PropertyName = nameof(ReffitableCargo) });
-            PropertyDefinition.Add(0x2A, new PropertyInfo() { Length = 4, PropertyName = nameof(LongDateOfIntroduction) });
+            PropertyDefinition.Add(new PropertyInfoId(0x05, Features.Trains), new PropertyInfo() { PropertyName = nameof(TrackType) });
+            PropertyDefinition.Add(new PropertyInfoId(0x09, Features.Trains), new PropertyInfo() { Length = FieldSizes.Word, PropertyName = nameof(Speed) });
+            PropertyDefinition.Add(new PropertyInfoId(0x0B, Features.Trains), new PropertyInfo() { Length = FieldSizes.Word, PropertyName = nameof(Power) });
+            PropertyDefinition.Add(new PropertyInfoId(0x0E, Features.Trains), new PropertyInfo() { Length = FieldSizes.DoubleWord, PropertyName = nameof(RunningCost) });
+            PropertyDefinition.Add(new PropertyInfoId(0x0D, Features.Trains), new PropertyInfo() { PropertyName = nameof(RunningCostFactor) });
+            PropertyDefinition.Add(new PropertyInfoId(0x14, Features.Trains), new PropertyInfo() { Length = FieldSizes.Byte, PropertyName = nameof(CargoCapacity) });
+            PropertyDefinition.Add(new PropertyInfoId(0x15, Features.Trains), new PropertyInfo() { PropertyName = nameof(CargoType) });
+            PropertyDefinition.Add(new PropertyInfoId(0x16, Features.Trains), new PropertyInfo() { PropertyName = nameof(Weight) });
+            PropertyDefinition.Add(new PropertyInfoId(0x19, Features.Trains), new PropertyInfo() { PropertyName = nameof(TractionType) });
+            PropertyDefinition.Add(new PropertyInfoId(0x1F, Features.Trains), new PropertyInfo() { PropertyName = nameof(TractiveEffort) });
+            PropertyDefinition.Add(new PropertyInfoId(0x20, Features.Trains), new PropertyInfo() { PropertyName = nameof(AirDrag) });
+            PropertyDefinition.Add(new PropertyInfoId(0x21, Features.Trains), new PropertyInfo() { PropertyName = nameof(SizeReduction) });
+            PropertyDefinition.Add(new PropertyInfoId(0x28, Features.Trains), new PropertyInfo() { Length = FieldSizes.Word, PropertyName = nameof(ReffitableCargo) });
+            PropertyDefinition.Add(new PropertyInfoId(0x2A, Features.Trains), new PropertyInfo() { Length = FieldSizes.DoubleWord, PropertyName = nameof(LongDateOfIntroduction) });
 
-            PropertyDefinition.Add(0x08, new PropertyInfo());
-            PropertyDefinition.Add(0x12, new PropertyInfo());
-            PropertyDefinition.Add(0x13, new PropertyInfo());
-            PropertyDefinition.Add(0x17, new PropertyInfo());
-            PropertyDefinition.Add(0x18, new PropertyInfo());
-            PropertyDefinition.Add(0x1A, new PropertyInfo());
-            PropertyDefinition.Add(0x1B, new PropertyInfo() { Length = 2 });
-            PropertyDefinition.Add(0x1C, new PropertyInfo());
-            PropertyDefinition.Add(0x1D, new PropertyInfo() { Length = 4 });
-            PropertyDefinition.Add(0x1E, new PropertyInfo());
-            PropertyDefinition.Add(0x22, new PropertyInfo());
-            PropertyDefinition.Add(0x23, new PropertyInfo());
-            PropertyDefinition.Add(0x24, new PropertyInfo());
-            PropertyDefinition.Add(0x25, new PropertyInfo());
-            PropertyDefinition.Add(0x26, new PropertyInfo());
-            PropertyDefinition.Add(0x27, new PropertyInfo());
-            PropertyDefinition.Add(0x29, new PropertyInfo() { Length = 2 });
-            PropertyDefinition.Add(0x2B, new PropertyInfo() { Length = 2 });
-            PropertyDefinition.Add(0x2C, new PropertyInfo() { Length = Constants.PROPERTY_SPECIAL_LENGTH_VALUE });
-            PropertyDefinition.Add(0x2D, new PropertyInfo() { Length = Constants.PROPERTY_SPECIAL_LENGTH_VALUE });
+            PropertyDefinition.Add(new PropertyInfoId(0x08, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x12, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x13, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x17, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x18, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x1A, Features.Trains), new PropertyInfo()); // !!!!! Since OpenTTD r13831 this is an extended byte
+            PropertyDefinition.Add(new PropertyInfoId(0x1B, Features.Trains), new PropertyInfo() { Length = FieldSizes.Word });
+            PropertyDefinition.Add(new PropertyInfoId(0x1C, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x1D, Features.Trains), new PropertyInfo() { Length = FieldSizes.DoubleWord });
+            PropertyDefinition.Add(new PropertyInfoId(0x1E, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x22, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x23, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x24, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x25, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x26, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x27, Features.Trains), new PropertyInfo());
+            PropertyDefinition.Add(new PropertyInfoId(0x29, Features.Trains), new PropertyInfo() { Length = FieldSizes.Word });
+            PropertyDefinition.Add(new PropertyInfoId(0x2B, Features.Trains), new PropertyInfo() { Length = FieldSizes.Word });
+            PropertyDefinition.Add(new PropertyInfoId(0x2C, Features.Trains), new PropertyInfo() { Length = FieldSizes.MultipleBytes });
+            PropertyDefinition.Add(new PropertyInfoId(0x2D, Features.Trains), new PropertyInfo() { Length = FieldSizes.MultipleBytes});
         }
-
-
     }
 }

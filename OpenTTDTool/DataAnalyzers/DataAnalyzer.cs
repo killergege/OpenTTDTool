@@ -1,4 +1,5 @@
-﻿using OpenTTDTool.Helpers;
+﻿using log4net;
+using OpenTTDTool.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,66 +11,41 @@ namespace OpenTTDTool.DataAnalyzers
     /// <summary>
     /// Basic analysing of a row.
     /// </summary>
-    public class DataAnalyzer
+    public abstract class DataAnalyzer
     {
-        private bool cleaned;
-
-        public List<string> ParsedText { get; private set; }
-
-        public DataAnalyzer(List<string> parsedText)
-        {
-            ParsedText = parsedText;
-            cleaned = false;
-        }
+        public List<string> ParsedText { get; protected set; }
+        public int RowNumber { get; set; }
 
         /// <summary>
-        /// 
+        /// Reading properties moved the readindex, so if the property has already been read, it doesn't move
         /// </summary>
-        /// <param name="dataAnalyzer"></param>
-        /// <returns>False if the row should be ignored</returns>
-        public bool ReadLabel(int rowNumber)
+        protected Dictionary<string, string> AlreadyReadProperties { get; private set; }
+        protected int ReadIndex { get; set; }
+
+        protected bool Cleaned;
+        private static readonly ILog log = LogManager.GetLogger(typeof(DataAnalyzer));
+
+        public DataAnalyzer(List<string> parsedText, int rowNumber, int initialReadIndex = Constants.INDEX_CLEANABLE)
         {
-            var code = default(int);
-            var label = default(string);
+            ParsedText = parsedText;
+            RowNumber = rowNumber;
 
-            var feature = ReadFeature();
+            Cleaned = false;
+            AlreadyReadProperties = new Dictionary<string, string>();
+            ReadIndex = initialReadIndex;
 
-            var language = ReadLanguage();
-            if (language == Constants.DEFAULT_LANGUAGE && feature != null)
-            {
-                code = ReadCode();
-                label = ReadText();
-            }
-            else
-            {
-                return false;
-            }
-
-            VehicleManager.Instance.SetProperty(rowNumber, code, feature.Value, Constants.PROPERTY_LABEL_CODE, label);
-            return true;
+            CleanParsedText();
         }
 
-        public bool ReadProperties(int rowNumber)
-        {
-            var feature = ReadFeature();
-            switch (feature)
-            {
-                case Features.Trains:
-                    var analyzer = new TrainDataAnalyzer(ParsedText);
-                    return analyzer.ReadTrain(rowNumber);
-                default:
-                    break;
-            }
+        public abstract bool ProcessData();
 
-            return true;
-        }
+        public abstract void CleanParsedText();
 
         #region Row individual value processing
-        public virtual Actions? ReadAction()
+        public static Actions? ReadAction(List<string> parsedText)
         {
-            Actions? action = ReadEnum<Actions>(Constants.INDEX_ACTIONS);
-            CleanParsedText(action);
-            return action;
+            var hexValue = IntHelper.ConvertFromHex(parsedText[Constants.INDEX_ACTIONS]);
+            return Enum.IsDefined(typeof(Actions), hexValue) ? (Actions)hexValue : (Actions?)null;
         }
 
         public virtual Features? ReadFeature()
@@ -77,75 +53,9 @@ namespace OpenTTDTool.DataAnalyzers
             return ReadEnum<Features>(Constants.INDEX_FEATURES);
         }
 
-        private void CleanParsedText(Actions? action)
-        {
-            if (cleaned)
-                return;
-
-            List<string> cleanParsedText;
-            switch (action)
-            {
-                case Actions.Labels:
-                    int label_code;
-                    if (ReadLanguage() == Constants.DEFAULT_LANGUAGE)
-                    {
-                        if (!TryReadHexData(Constants.INDEX_IDENTIFIER, out label_code))
-                        {
-                            Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
-                            string cleanText = ParsedText[Constants.INDEX_IDENTIFIER].Substring(1);
-                            string encodedValue = IntHelper.ConvertToHex(enc.GetBytes(ParsedText[Constants.INDEX_IDENTIFIER])[0]);
-                            ParsedText[Constants.INDEX_IDENTIFIER] = cleanText;
-                            ParsedText.Insert(Constants.INDEX_IDENTIFIER, encodedValue);
-                            
-    }
-                    }
-                    break;
-                case Actions.Properties:
-                    cleanParsedText = new List<string>();
-                    
-                    for(int i = 0;i<ParsedText.Count;i++)
-                    {
-                        //On vérifie les valeurs à partir de la 5ième car on ignore : la ligne, le sprite, le nb d'élement, l'action
-                        if (i < Constants.INDEX_CLEANABLE)
-                        {
-                            cleanParsedText.Add(ParsedText[i]);
-                        }
-                        else
-                        {
-                            int property_code;
-                            //Si le texte n'est pas 2 charactères hexa, c'est sans doute une chaine à convertir
-                            if (ParsedText[i].Length > 2 || !IntHelper.TryConvertFromHex(ParsedText[i], out property_code))
-                            {
-                                Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
-                                enc.GetBytes(ParsedText[i]).ToList().ForEach(p => cleanParsedText.Add(IntHelper.ConvertToHex(p)));
-                            }
-                            else
-                            {
-                                cleanParsedText.Add(ParsedText[i]);
-                            }
-                        }
-                    }
-                    ParsedText = cleanParsedText;
-                    break;
-                default:
-                    break;
-            }
-            cleaned = true;
-        }
-
-        public virtual int ReadLanguage()
-        {
-            return ReadHexData(Constants.INDEX_LANGUAGE);
-        }
-
         public virtual int ReadCode()
         {
-            return ReadHexData(Constants.INDEX_IDENTIFIER);
-        }
-
-        public virtual string ReadText()
-        {
-            return ParsedText[Constants.INDEX_TEXT];
+            return ReadIntField(FieldSizes.ExtendedByte, nameof(ReadCode)).Value;
         }
 
         protected T? ReadEnum<T>(int index) where T : struct
@@ -165,6 +75,87 @@ namespace OpenTTDTool.DataAnalyzers
         protected bool TryReadHexData(int index, out int result)
         {
             return IntHelper.TryConvertFromHex(ParsedText[index], out result);
+        }
+
+        protected string ReadStringField(FieldSizes fieldSize, string fieldName = null)
+        {
+            return ReadRawValue(fieldSize, fieldName);
+        }
+
+        protected int? ReadIntField(FieldSizes fieldSize, string fieldName = null)
+        {
+            string raw = null;
+            try
+            {
+                raw = ReadRawValue(fieldSize, fieldName);
+
+                int intValue;
+                if (IntHelper.TryConvertFromHex(raw, out intValue))
+                    return intValue;
+                else
+                    return null;
+            }
+            catch
+            {
+                log.Error($"Row {RowNumber}: Error parsing int value \"{raw}\" on ReadIndex {ReadIndex}");
+                throw;
+            }
+        }
+
+        private string ReadRawValue(FieldSizes fieldSize, string fieldName = null)
+        {
+            var textValueBuilder = new StringBuilder();
+
+            if (!String.IsNullOrWhiteSpace(fieldName) && AlreadyReadProperties.ContainsKey(fieldName))
+                return AlreadyReadProperties[fieldName];
+
+            var length = Constants.FieldLengths[fieldSize];
+
+            if (fieldSize == FieldSizes.ExtendedByte)
+            {
+                var firstByte = ReadIntField(FieldSizes.Byte);
+                if (firstByte == 0xFF)
+                {
+                    length = 2;
+                }
+                else
+                {
+                    //Value already read
+                    textValueBuilder = new StringBuilder(firstByte.ToString());
+                    length = null;
+                }
+            }
+
+            if (length.HasValue)
+            {
+                for (var i = (ReadIndex - 1) + length.Value; i >= ReadIndex; i--)
+                {
+                    if (i >= ParsedText.Count)
+                    {
+                        log.Error($"Row {RowNumber}: index would be out of range (index: {i}, Parsed text length: {ParsedText.Count}).");
+                        return null;
+                    }
+                    textValueBuilder = textValueBuilder.Append(ParsedText[i]);
+                }
+
+            }
+            else
+            {
+                if (fieldSize == FieldSizes.MultipleBytes)
+                {
+                    //TODO : pas traité pour le moment. List of always refittable cargo types / never refittable cargo types
+                    var nbData = ReadIntField(FieldSizes.Byte);
+                    length = nbData;
+                }
+            }
+
+            if (length.HasValue)
+                ReadIndex += length.Value;
+
+            var textValue = textValueBuilder.ToString();
+            if (!String.IsNullOrWhiteSpace(fieldName))
+                AlreadyReadProperties.Add(fieldName, textValue);
+            return textValue;
         }
         #endregion
     }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OpenTTDTool.Entities
 {
-    class Cargo
+    static class Cargo
     {
         [Flags]
         public enum CargoTypes
@@ -45,18 +45,15 @@ namespace OpenTTDTool.Entities
             Reserved2 = 16384,
             [Description("Special")]
             Special = 32768
+        }
 
-    }
-
-        private Cargo() { }
-
-        public static List<CargoTypes> readCargoTypes(CargoTypes bitmask)
+        public static List<CargoTypes> ReadCargoTypes(CargoTypes bitmask)
         {
-            List<CargoTypes> types = new List<CargoTypes>();
+            var types = new List<CargoTypes>();
 
-            foreach(CargoTypes type in Enum.GetValues(typeof(CargoTypes)))
+            foreach (CargoTypes type in Enum.GetValues(typeof(CargoTypes)))
             {
-                if(bitmask.HasFlag(type))
+                if (bitmask.HasFlag(type))
                 {
                     types.Add(type);
                 }

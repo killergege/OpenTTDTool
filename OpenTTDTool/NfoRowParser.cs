@@ -50,25 +50,17 @@ namespace OpenTTDTool
                 }
             }
 
-            var dataAnalyzer = new DataAnalyzer(ParsedText);
-            switch (dataAnalyzer.ReadAction())
+            var analyzer = AnalyzerFactory.CreateInstance(ParsedText, Number);
+            if (analyzer == null)
             {
-                case Actions.Labels:
-                    if (!dataAnalyzer.ReadLabel(Number))
-                        Ignore = true;
-                    break;
-
-                case Actions.Properties:
-                    if (!dataAnalyzer.ReadProperties(Number))
-                        Ignore = true;
-                    break;
-
-                default:
-                    Ignore = true;
-                    break;
+                Ignore = true;
             }
-
-
+            else
+            {
+                var success = analyzer.ProcessData();
+                if (!success)
+                    Ignore = true;
+            }
         }
     }
 }

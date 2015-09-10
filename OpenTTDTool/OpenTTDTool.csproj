@@ -49,8 +49,11 @@
   <ItemGroup>
     <Compile Include="Configs\LocalizationConfig.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DataAnalyzers\Action0Analyzer.cs" />
+    <Compile Include="DataAnalyzers\Action4Analyzer.cs" />
+    <Compile Include="DataAnalyzers\Action8Analyzer.cs" />
+    <Compile Include="DataAnalyzers\AnalyzerFactory.cs" />
     <Compile Include="DataAnalyzers\DataAnalyzer.cs" />
-    <Compile Include="DataAnalyzers\TrainDataAnalyzer.cs" />
     <Compile Include="Entities\Cargo.cs" />
     <Compile Include="Configs\GameConfig.cs" />
     <Compile Include="Extensions\EnumExtension.cs" />
