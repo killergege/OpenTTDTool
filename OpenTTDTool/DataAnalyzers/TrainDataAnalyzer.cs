@@ -31,7 +31,7 @@ namespace OpenTTDTool.DataAnalyzers
                 return false;
             }
 
-            var code = ReadCodeAndLabel(true).Code;
+            var code = ReadCode();
 
             var index = Constants.DATA_TRAIN_INDEX_PROPERTIES;
             while (index < ParsedText.Count)

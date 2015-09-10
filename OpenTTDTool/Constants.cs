@@ -47,8 +47,7 @@ namespace OpenTTDTool
         public const int INDEX_CLEANABLE = 5;
         public const int INDEX_LANGUAGE = 5;
         public const int INDEX_IDENTIFIER = 7;
-        public const int INDEX_IDENTIFIER_AND_LABEL = 7;
-        public const int INDEX_LABEL = 8;
+        public const int INDEX_TEXT = 8;
 
         public const int PROPERTY_LABEL_CODE = -0x01;
         public const string PROPERTY_SPRITE_NONE = "*";

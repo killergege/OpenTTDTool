@@ -37,9 +37,8 @@ namespace OpenTTDTool.DataAnalyzers
             var language = ReadLanguage();
             if (language == Constants.DEFAULT_LANGUAGE && feature != null)
             {
-                var codeAndLabel = ReadCodeAndLabel();
-                code = codeAndLabel.Code;
-                label = codeAndLabel.Label;
+                code = ReadCode();
+                label = ReadText();
             }
             else
             {
@@ -69,7 +68,7 @@ namespace OpenTTDTool.DataAnalyzers
         public virtual Actions? ReadAction()
         {
             Actions? action = ReadEnum<Actions>(Constants.INDEX_ACTIONS);
-            cleanParsedText(action);
+            CleanParsedText(action);
             return action;
         }
 
@@ -78,7 +77,7 @@ namespace OpenTTDTool.DataAnalyzers
             return ReadEnum<Features>(Constants.INDEX_FEATURES);
         }
 
-        private void cleanParsedText(Actions? action)
+        private void CleanParsedText(Actions? action)
         {
             if (cleaned)
                 return;
@@ -90,13 +89,13 @@ namespace OpenTTDTool.DataAnalyzers
                     int label_code;
                     if (ReadLanguage() == Constants.DEFAULT_LANGUAGE)
                     {
-                        if (!TryReadHexData(Constants.INDEX_IDENTIFIER_AND_LABEL, out label_code))
+                        if (!TryReadHexData(Constants.INDEX_IDENTIFIER, out label_code))
                         {
                             Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
-                            string cleanText = ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL].Substring(1);
-                            string encodedValue = IntHelper.ConvertToHex(enc.GetBytes(ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL])[0]);
-                            ParsedText[Constants.INDEX_IDENTIFIER_AND_LABEL] = cleanText;
-                            ParsedText.Insert(Constants.INDEX_IDENTIFIER_AND_LABEL, encodedValue);
+                            string cleanText = ParsedText[Constants.INDEX_IDENTIFIER].Substring(1);
+                            string encodedValue = IntHelper.ConvertToHex(enc.GetBytes(ParsedText[Constants.INDEX_IDENTIFIER])[0]);
+                            ParsedText[Constants.INDEX_IDENTIFIER] = cleanText;
+                            ParsedText.Insert(Constants.INDEX_IDENTIFIER, encodedValue);
                             
     }
                     }
@@ -139,17 +138,14 @@ namespace OpenTTDTool.DataAnalyzers
             return ReadHexData(Constants.INDEX_LANGUAGE);
         }
 
-        public virtual dynamic ReadCodeAndLabel(bool ignoreLabel = false)
+        public virtual int ReadCode()
         {
-            var code = default(int);
-            var label = default(string);
-            code = ReadHexData(Constants.INDEX_IDENTIFIER);
-            if(!ignoreLabel)
-            {
-                cleanParsedText(Actions.Labels);
-                label = ParsedText[Constants.INDEX_LABEL];
-            }
-            return new { Code = code, Label = label };
+            return ReadHexData(Constants.INDEX_IDENTIFIER);
+        }
+
+        public virtual string ReadText()
+        {
+            return ParsedText[Constants.INDEX_TEXT];
         }
 
         protected T? ReadEnum<T>(int index) where T : struct
