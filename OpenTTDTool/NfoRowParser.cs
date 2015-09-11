@@ -36,21 +36,7 @@ namespace OpenTTDTool
         {
             ParsedText = FullText.SplitWithQuotes(" ", "\t");
 
-            int numTemp;
-            if (int.TryParse(ParsedText.FirstOrDefault(), out numTemp))
-                Number = numTemp;
-
-            if (ParsedText.Count > 1)
-            {
-                IsSprite = ParsedText[Constants.INDEX_SPRITES] != Constants.PROPERTY_SPRITE_NONE;
-                if (IsSprite)
-                {
-                    Ignore = true;
-                    return;
-                }
-            }
-
-            var analyzer = AnalyzerFactory.CreateInstance(ParsedText, Number);
+            var analyzer = AnalyzerFactory.CreateInstance(ParsedText);
             if (analyzer == null)
             {
                 Ignore = true;

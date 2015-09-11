@@ -48,6 +48,13 @@ namespace OpenTTDTool
         MultipleBytes
     }
 
+    public enum LineType
+    {
+        RealSprite,
+        Sound,
+        PseudoSprite
+    }
+
     public enum Actions
     {
         Properties = 0x00,
@@ -83,16 +90,17 @@ namespace OpenTTDTool
     {
         public const int DEFAULT_LANGUAGE = 0x7F;
 
+        public const int INDEX_ROW = 0;
         public const int INDEX_SPRITES = 1;
-        public const int INDEX_ACTIONS = 3;
-        public const int INDEX_FEATURES = 4;
-        public const int INDEX_CLEANABLE = 5;
-        public const int INDEX_LANGUAGE = 5;
+        public const int INDEX_SIZE = 2;
+        public const int INDEX_ACTIONS = 3; //TODO : virer
+        public const int INDEX_FEATURES = 4; //TODO : virer
+        public const int INDEX_CLEANABLE = 5; //TODO : virer
         public const int INDEX_IDENTIFIER = 7; //TODO : virer
-        //public const int INDEX_TEXT = 8;
 
         public const int PROPERTY_LABEL_CODE = -0x01;
         public const string PROPERTY_SPRITE_NONE = "*";
+        public const string PROPERTY_SPRITE_SOUND = "**";
         public const int PROPERTY_SPECIAL_LENGTH_VALUE = -0x01;
 
         //public const int DATA_TRAIN_INDEX_NB_VEHICLES = 6;

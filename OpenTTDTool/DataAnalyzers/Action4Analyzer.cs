@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OpenTTDTool.DataAnalyzers
 {
-    public class Action4Analyzer : DataAnalyzer
+    public class Action4Analyzer : PseudoSpriteAnalyzer
     {
         protected int Language { get; set; }
 
@@ -19,8 +19,8 @@ namespace OpenTTDTool.DataAnalyzers
         public override bool ProcessData()
         {
             //Read data 
-            Language = ReadIntField(FieldSizes.Byte).Value;
-            var numEnt = ReadIntField(FieldSizes.Byte);
+            Language = ReadIntFieldFromHex(FieldSizes.Byte).Value;
+            var numEnt = ReadIntFieldFromHex(FieldSizes.Byte);
 
             return ReadLabel(Language);
         }

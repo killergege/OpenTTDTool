@@ -11,7 +11,7 @@ namespace OpenTTDTool.DataAnalyzers
     /// <summary>
     /// Specs : http://newgrf-specs.tt-wiki.net/wiki/Action0
     /// </summary>
-    public class Action0Analyzer : DataAnalyzer
+    public class Action0Analyzer : PseudoSpriteAnalyzer
     {
         public Action0Analyzer(List<string> parsedText, int rowNumber) : base(parsedText, rowNumber)
         {
@@ -21,8 +21,8 @@ namespace OpenTTDTool.DataAnalyzers
         public override bool ProcessData()
         {
             //Read data 
-            var numProps = ReadIntField(FieldSizes.Byte);
-            var numInfos = ReadIntField(FieldSizes.Byte);
+            var numProps = ReadIntFieldFromHex(FieldSizes.Byte);
+            var numInfos = ReadIntFieldFromHex(FieldSizes.Byte);
             var code = ReadCode();
             return ReadProperties(numInfos.Value, numProps.Value);
         }
@@ -41,12 +41,12 @@ namespace OpenTTDTool.DataAnalyzers
 
             for (int i = 0; i < nbProperties; i++)
             {
-                var propCode = ReadIntField(FieldSizes.Byte);
+                var propCode = ReadIntFieldFromHex(FieldSizes.Byte);
 
                 var datalength = Vehicle.GetDataLength(propCode.Value, feature);
                 if (datalength.HasValue)
                 {
-                    var intValue = ReadIntField(datalength.Value);
+                    var intValue = ReadIntFieldFromHex(datalength.Value);
                     if (intValue.HasValue)
                         VehicleManager.Instance.SetProperty(RowNumber, code, feature.Value, propCode.Value, intValue);
                 }
