@@ -18,9 +18,26 @@ namespace OpenTTDTool.Entities
         public int ModelLife { get; set; }
         public int Climate { get; set; }
         public int LoadingSpeed { get; set; }
+        public int Id { get; set; }
+
+        public string NonEmptyName
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(Name))
+                    return "<unknown>";
+                else
+                    return Name;
+            }
+            set { }
+        }
 
         public List<Tuple<string, int>> DebugInfo = new List<Tuple<string, int>>();
 
+        public Vehicle(int Id)
+        {
+            this.Id = Id;
+        }
         static Vehicle()
         {
             PropertyDefinition.Add(new PropertyInfoId(0x00, null), new PropertyInfo() { Length = FieldSizes.Word, PropertyName = nameof(DateOfIntroduction) });
@@ -79,9 +96,9 @@ namespace OpenTTDTool.Entities
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Type: {this.GetType().Name}, Name: {Name}({this.DebugInfo.FirstOrDefault(d => d.Item1 == "Name")?.Item2})");
             sb.AppendLine($"\tRaw data (unused hidden) :");
-            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite && this.DebugInfo.Any(d=>d.Item1 == p.Name)))
+            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite && this.DebugInfo.Any(d => d.Item1 == p.Name)))
             {
-                sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)} (row: {this.DebugInfo.FirstOrDefault(p=>p.Item1 == prop.Name)?.Item2 })");
+                sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)} (row: {this.DebugInfo.FirstOrDefault(p => p.Item1 == prop.Name)?.Item2 })");
             }
             sb.AppendLine($"\tCalculated :");
             foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => !p.CanWrite))
@@ -90,6 +107,56 @@ namespace OpenTTDTool.Entities
             }
 
             sb.AppendLine();
+            return sb.ToString();
+        }
+
+        public virtual int GetOrderKey()
+        {
+            return Id;
+        }
+
+        public virtual string GameDisplay(string LinePrefix = "")
+        {
+            //Cost : XXX Weight : XXX
+            //Speed : XXX Power : XXX
+            //Max. Tractive Effort : XXX
+            //Running Cost : xxx
+            //Capacity : XXX
+            //Designed : XXX Life : XXX
+            //Max. Reliability : XXX
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(LinePrefix);
+            sb.Append("Cost : ");
+            sb.Append("unknown");
+            sb.Append("Weight : ");
+            sb.Append("unknown");
+            sb.Append(Environment.NewLine);
+            sb.Append(LinePrefix);
+            sb.Append("Speed : ");
+            sb.Append("unknown");
+            sb.Append("Power : ");
+            sb.Append("unknown");
+            sb.Append(Environment.NewLine);
+            sb.Append(LinePrefix);
+            sb.Append("Max. Tractive Effort : ");
+            sb.Append("unknown");
+            sb.Append(Environment.NewLine);
+            sb.Append(LinePrefix);
+            sb.Append("Capacity : ");
+            sb.Append("unknown");
+            sb.Append(Environment.NewLine);
+            sb.Append(LinePrefix);
+            sb.Append("Designed : ");
+            sb.Append(ModelLife);
+            sb.Append("Life : ");
+            sb.Append(VehicleLife);
+            sb.Append(" years");
+            sb.Append(Environment.NewLine);
+            sb.Append(LinePrefix);
+            sb.Append("Max. Reliability : ");
+            sb.Append("unknown");
+
             return sb.ToString();
         }
     }

@@ -103,6 +103,10 @@ namespace OpenTTDTool
         public const string PROPERTY_SPRITE_SOUND = "**";
         public const int PROPERTY_SPECIAL_LENGTH_VALUE = -0x01;
 
+        public const int COST_FACTOR_BASE = 3125;
+
+        public const double GRAVITY = 9.8;
+
         //public const int DATA_TRAIN_INDEX_NB_VEHICLES = 6;
         //public const int DATA_TRAIN_INDEX_PROPERTIES = 8;
 

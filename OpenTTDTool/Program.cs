@@ -43,6 +43,13 @@ namespace OpenTTDTool
                 ////lister.ForEach(p => { var nom = p.ParsedText[7]; Console.WriteLine(String.Format("{0} - {1} - {2}", p.Number, (int)nom[0], nom.Substring(1))); });
                 //lister.ForEach(p => Console.WriteLine(p.FullText));
 
+                //Failed attemp at sorting as the game
+                //VehicleManager.Instance.Vehicles.Select(p => p.Value).OrderBy(p => p.GetOrderKey()).ToList().ForEach(p => { Console.WriteLine(p.Name); Console.WriteLine(p.GameDisplay("\t")); Console.ReadKey(); });
+
+                //Game Display
+                //VehicleManager.Instance.Vehicles.Select(p => p.Value).ToList().ForEach(p => { Console.WriteLine(p.NonEmptyName); Console.WriteLine(p.GameDisplay("\t")); Console.WriteLine(); Console.ReadKey(); });
+
+                //Debug Display
                 VehicleManager.Instance.Vehicles.Select(p => p.Value).ToList().ForEach(p => { Console.WriteLine(p.ToString()); Console.ReadKey(); });
                 //VehicleManager.Instance.Vehicles.Select(p => p.Value).Where(p=>String.IsNullOrWhiteSpace( p.Name)) .ToList().ForEach(p => { Console.WriteLine(p.ToString());/* Console.ReadKey();*/ });
 

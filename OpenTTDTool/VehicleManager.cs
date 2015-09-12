@@ -32,7 +32,7 @@ namespace OpenTTDTool
                 switch (feature)
                 {
                     case Features.Trains:
-                        vehicle = new Train();
+                        vehicle = new Train(idVehicle);
                         Vehicles.Add(idVehicle, vehicle);
                         break;
                     default:
