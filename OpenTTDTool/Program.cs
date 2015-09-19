@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using log4net.Config;
 using OpenTTDTool.Entities;
 using OpenTTDTool.Configs;
 using OpenTTDTool.Entities.GameEntities;
 using log4net;
-using System.Reflection;
 using OpenTTDTool.Managers;
 
 namespace OpenTTDTool
 {
     class Program
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+        private static readonly ILog log = LoggerManager.GetLogger(typeof(Program));
+        private static readonly ILog logValues = LoggerManager.GetLogger(LoggerType.ParsedValues, typeof(Program));
 
         static void Main(string[] args)
         {
@@ -56,10 +55,10 @@ namespace OpenTTDTool
                 //VehicleManager.Instance.Vehicles.Select(p => p.Value).OrderBy(p => p.GetOrderKey()).ToList().ForEach(p => { Console.WriteLine(p.Name); Console.WriteLine(p.GameDisplay("\t")); Console.ReadKey(); });
 
                 //Game Display
-                VehicleManager.Instance.Vehicles.Values.ToList().ForEach(p => { Console.WriteLine(p.NonEmptyName); Console.WriteLine(p.GameDisplay("\t")); Console.WriteLine(); /*Console.ReadKey();*/ });
+                //VehicleManager.Instance.Vehicles.Values.ToList().ForEach(p => { Console.WriteLine(p.NonEmptyName); Console.WriteLine(p.GameDisplay("\t")); Console.WriteLine(); /*Console.ReadKey();*/ });
 
                 //Debug Display
-                VehicleManager.Instance.Vehicles.Values.ToList().ForEach(p => { log.Debug(p.ToString()); /*Console.ReadKey();*/ });
+                VehicleManager.Instance.Vehicles.Values.ToList().ForEach(p => { logValues.Debug(p.ToString()); /*Console.ReadKey();*/ });
                 //VehicleManager.Instance.Vehicles.Select(p => p.Value).Where(p=>String.IsNullOrWhiteSpace( p.Name)) .ToList().ForEach(p => { Console.WriteLine(p.ToString());/* Console.ReadKey();*/ });
 
                 CsvExporter.ExportObjects("test.csv", VehicleManager.Instance.Vehicles.Values.Cast<Train>().ToList(), ";");

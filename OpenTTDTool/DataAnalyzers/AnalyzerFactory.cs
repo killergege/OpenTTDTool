@@ -1,4 +1,5 @@
 ﻿using log4net;
+using OpenTTDTool.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace OpenTTDTool.DataAnalyzers
 {
     public static class AnalyzerFactory
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AnalyzerFactory));
+        private static readonly ILog log = LoggerManager.GetLogger(typeof(AnalyzerFactory));
 
         public static DataAnalyzer CreateInstance(List<string> parsedText)
         {

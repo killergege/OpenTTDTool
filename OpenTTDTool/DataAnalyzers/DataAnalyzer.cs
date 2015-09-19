@@ -1,5 +1,6 @@
 ﻿using log4net;
 using OpenTTDTool.Helpers;
+using OpenTTDTool.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace OpenTTDTool.DataAnalyzers
         protected Dictionary<string, string> AlreadyReadProperties { get; set; }
         protected int ReadIndex { get; set; }
 
-        protected static readonly ILog log = LogManager.GetLogger(typeof(PseudoSpriteAnalyzer));
+        protected static readonly ILog log = LoggerManager.GetLogger(typeof(PseudoSpriteAnalyzer));
 
         public abstract bool ProcessData();
 
