@@ -63,6 +63,7 @@
     <Compile Include="Extensions\TypeExtension.cs" />
     <Compile Include="Helpers\IntHelper.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="Managers\LoggerManager.cs" />
     <Compile Include="Managers\CsvExporter.cs" />
     <Compile Include="Managers\LocalizedStringManager.cs" />
     <Compile Include="NfoRowParser.cs" />
