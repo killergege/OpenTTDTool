@@ -12,13 +12,50 @@ namespace OpenTTDTool
     {
         public static List<string> SplitWithQuotes(this string myString, params string[] separators)
         {
-            myString = myString.Replace("\"\\\"", "22 \"");
-            myString = myString.Replace("\\\"", "'");
-            return myString.Split('"')
-                     .Select((element, index) => index % 2 == 0  // If even index
-                                           ? element.Split(separators, StringSplitOptions.RemoveEmptyEntries)  // Split the item
-                                           : new string[] { element })  // Keep the entire item
-                     .SelectMany(element => element).ToList();
+            var result = new List<string>();
+            var currentWord = new StringBuilder();
+            var isInString = false;
+            var isEscaped = false;
+            foreach(var car in myString)
+            {
+                if (isEscaped)
+                {
+                    currentWord.Append(car);
+                    isEscaped = false;
+                    continue;
+                }
+            
+                if(car == '\\')
+                {
+                    isEscaped = true;
+                    continue;
+                }
+                
+                if(car == '\"')
+                {
+                    if (isInString)
+                        isInString = false;
+                    else
+                        isInString = true;
+                    continue;
+                }
+
+                if (!isInString && separators.Contains(car.ToString()))
+                {
+                    if (currentWord.Length != 0)
+                        result.Add(currentWord.ToString());
+                    currentWord.Clear();
+                    isInString = false;
+                }
+                else
+                {
+                    currentWord.Append(car);
+                }
+            }
+            if (currentWord.Length != 0)
+                result.Add(currentWord.ToString());
+
+            return result;
         }
     }
 }

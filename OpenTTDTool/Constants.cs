@@ -87,8 +87,8 @@ namespace OpenTTDTool
     }
 
     public class Constants
-    {
-        public const int DEFAULT_LANGUAGE = 0x7F;
+    {        
+        public const int LANGUAGE_UK = 0x03;
 
         public const int INDEX_ROW = 0;
         public const int INDEX_SPRITES = 1;
@@ -97,6 +97,7 @@ namespace OpenTTDTool
         public const int INDEX_FEATURES = 4; //TODO : virer
         public const int INDEX_CLEANABLE = 5; //TODO : virer
         public const int INDEX_IDENTIFIER = 7; //TODO : virer
+        public const int INDEX_EXTENDED_IDENTIFIER = 8; //TODO : virer
 
         public const int PROPERTY_LABEL_CODE = -0x01;
         public const string PROPERTY_SPRITE_NONE = "*";
@@ -107,11 +108,14 @@ namespace OpenTTDTool
 
         public const double GRAVITY = 9.8;
 
+        public const int MIN_NUMBER_OF_ELEMENTS = 5;
+
         //public const int DATA_TRAIN_INDEX_NB_VEHICLES = 6;
         //public const int DATA_TRAIN_INDEX_PROPERTIES = 8;
 
         public const int CODE_PAGE_NFO = 437;
 
+        public static readonly int?[] SupportedLanguages = new int?[] { 0x7F, 0xFF, 0x01, 0x02, 0x03 };
         public static Dictionary<FieldSizes, int?> FieldLengths
         {
             get;

@@ -1,11 +1,12 @@
 ﻿using OpenTTDTool.Entities;
+using OpenTTDTool.Entities.GameEntities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTTDTool
+namespace OpenTTDTool.Managers
 {
     public class VehicleManager
     {

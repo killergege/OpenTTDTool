@@ -1,5 +1,7 @@
 ﻿using OpenTTDTool.Entities;
+using OpenTTDTool.Entities.GameEntities;
 using OpenTTDTool.Helpers;
+using OpenTTDTool.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,38 +56,9 @@ namespace OpenTTDTool.DataAnalyzers
             return true;
         }
 
-        public override void CleanParsedText()
+        public override void Clean()
         {
-            if (Cleaned)
-                return;
-
-            var cleanParsedText = new List<string>();
-
-            for (int i = 0; i < ParsedText.Count; i++)
-            {
-                //On vérifie les valeurs à partir de la 5ième car on ignore : la ligne, le sprite, le nb d'élement, l'action
-                if (i < Constants.INDEX_CLEANABLE)
-                {
-                    cleanParsedText.Add(ParsedText[i]);
-                }
-                else
-                {
-                    int property_code;
-                    //Si le texte n'est pas 2 charactères hexa, c'est sans doute une chaine à convertir
-                    if (ParsedText[i].Length > 2 || !IntHelper.TryConvertFromHex(ParsedText[i], out property_code))
-                    {
-                        Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
-                        enc.GetBytes(ParsedText[i]).ToList().ForEach(p => cleanParsedText.Add(IntHelper.ConvertToHex(p)));
-                    }
-                    else
-                    {
-                        cleanParsedText.Add(ParsedText[i]);
-                    }
-                }
-            }
-            ParsedText = cleanParsedText;
-
-            Cleaned = true;
+            TextToHex(Constants.INDEX_CLEANABLE);
         }
     }
 }

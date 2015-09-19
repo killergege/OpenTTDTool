@@ -55,18 +55,23 @@
     <Compile Include="DataAnalyzers\AnalyzerFactory.cs" />
     <Compile Include="DataAnalyzers\DataAnalyzer.cs" />
     <Compile Include="DataAnalyzers\PseudoSpriteAnalyzer.cs" />
-    <Compile Include="Entities\Cargo.cs" />
+    <Compile Include="Entities\GameEntities\Cargo.cs" />
     <Compile Include="Configs\GameConfig.cs" />
+    <Compile Include="Entities\SupportEntities\LocalizedString.cs" />
     <Compile Include="Extensions\EnumExtension.cs" />
+    <Compile Include="Extensions\IDictionaryExtension.cs" />
+    <Compile Include="Extensions\TypeExtension.cs" />
     <Compile Include="Helpers\IntHelper.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
+    <Compile Include="Managers\CsvExporter.cs" />
+    <Compile Include="Managers\LocalizedStringManager.cs" />
     <Compile Include="NfoRowParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Entities\PropertyInfo.cs" />
-    <Compile Include="Entities\Train.cs" />
-    <Compile Include="Entities\Vehicle.cs" />
-    <Compile Include="VehicleManager.cs" />
+    <Compile Include="Entities\SupportEntities\PropertyInfo.cs" />
+    <Compile Include="Entities\GameEntities\Train.cs" />
+    <Compile Include="Entities\GameEntities\Vehicle.cs" />
+    <Compile Include="Managers\VehicleManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

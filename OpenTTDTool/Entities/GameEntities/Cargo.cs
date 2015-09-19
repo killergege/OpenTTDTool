@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTTDTool.Entities
+namespace OpenTTDTool.Entities.GameEntities
 {
     static class Cargo
     {

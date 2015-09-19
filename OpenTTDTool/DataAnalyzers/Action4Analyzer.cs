@@ -1,4 +1,6 @@
-﻿using OpenTTDTool.Helpers;
+﻿using OpenTTDTool.Entities.SupportEntities;
+using OpenTTDTool.Helpers;
+using OpenTTDTool.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,6 @@ namespace OpenTTDTool.DataAnalyzers
 {
     public class Action4Analyzer : PseudoSpriteAnalyzer
     {
-        protected int Language { get; set; }
-
         public Action4Analyzer(List<string> parsedText, int rowNumber) : base(parsedText, rowNumber)
         {
 
@@ -19,25 +19,36 @@ namespace OpenTTDTool.DataAnalyzers
         public override bool ProcessData()
         {
             //Read data 
-            Language = ReadIntFieldFromHex(FieldSizes.Byte).Value;
+            var language = ReadIntFieldFromHex(FieldSizes.Byte).Value;
+            var extended = false;
+            if ((language & 0x80) == 0x80)
+            {
+                PositionToHex(Constants.INDEX_EXTENDED_IDENTIFIER);
+                extended = true;
+            }
+
+            //TODO : lire toutes les chaines en fonction du nombre d'entité
             var numEnt = ReadIntFieldFromHex(FieldSizes.Byte);
 
-            return ReadLabel(Language);
+            return ReadLabel(language, extended);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns>False if the row should be ignored</returns>
-        public bool ReadLabel(int language)
+        public bool ReadLabel(int language, bool extended)
         {
             var feature = ReadFeature();
             var code = default(int);
             var label = default(string);
 
-            if (language == Constants.DEFAULT_LANGUAGE && feature.HasValue)
+            if (feature.HasValue)
             {
-                code = ReadCode();
+                if (extended)
+                    code = ReadCode(FieldSizes.Word);
+                else
+                    code = ReadCode();
                 label = ReadStringField(FieldSizes.String);
             }
             else
@@ -45,27 +56,13 @@ namespace OpenTTDTool.DataAnalyzers
                 return false;
             }
 
-            VehicleManager.Instance.SetProperty(RowNumber, code, feature.Value, Constants.PROPERTY_LABEL_CODE, label);
+            VehicleManager.Instance.SetProperty(RowNumber, code, feature.Value, Constants.PROPERTY_LABEL_CODE, new LocalizedString(language, label));
             return true;
         }
 
-        public override void CleanParsedText()
+        public override void Clean()
         {
-            if (Cleaned)
-                return;
-
-            int label_code;
-            //if (Language == Constants.DEFAULT_LANGUAGE)
-            //{
-                if (!TryReadHexData(Constants.INDEX_IDENTIFIER, out label_code))
-                {
-                    Encoding enc = Encoding.GetEncoding(Constants.CODE_PAGE_NFO);
-                    string cleanText = ParsedText[Constants.INDEX_IDENTIFIER].Substring(1);
-                    string encodedValue = IntHelper.ConvertToHex(enc.GetBytes(ParsedText[Constants.INDEX_IDENTIFIER])[0]);
-                    ParsedText[Constants.INDEX_IDENTIFIER] = cleanText;
-                    ParsedText.Insert(Constants.INDEX_IDENTIFIER, encodedValue);
-                }
-            //}
+            PositionToHex(Constants.INDEX_IDENTIFIER);
         }
     }
 }

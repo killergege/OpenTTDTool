@@ -1,11 +1,12 @@
 ﻿using OpenTTDTool.Configs;
+using OpenTTDTool.Entities.SupportEntities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTTDTool.Entities
+namespace OpenTTDTool.Entities.GameEntities
 {
     public class Train : Vehicle
     {
@@ -37,6 +38,11 @@ namespace OpenTTDTool.Entities
             Power = 0;
             VehicleLife = 0;
             TractiveEffortCoefficient = 0x4C;
+        }
+
+        public Train():base()
+        {
+
         }
 
         public string ReffitableCargoLabels

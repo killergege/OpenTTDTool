@@ -1,17 +1,25 @@
-﻿using System;
+﻿using OpenTTDTool.Entities.SupportEntities;
+using OpenTTDTool.Managers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenTTDTool.Entities
+namespace OpenTTDTool.Entities.GameEntities
 {
     public abstract class Vehicle
     {
+        protected LocalizedStringManager NameManager = new LocalizedStringManager();
+
         protected static Dictionary<PropertyInfoId, PropertyInfo> PropertyDefinition = new Dictionary<PropertyInfoId, PropertyInfo>();
         protected const int MAX_COMMON_PROPERTY_ID = 0x07;
 
-        public string Name { get; set; }
+        public LocalizedString Name
+        {
+            get { return NameManager.GetDefault(); }
+            set { NameManager.Add(value); }
+        }
         public int DateOfIntroduction { get; set; }
         public int ReliabilityDecaySpeed { get; set; }
         public int VehicleLife { get; set; }
@@ -24,19 +32,23 @@ namespace OpenTTDTool.Entities
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(Name))
+                if (String.IsNullOrWhiteSpace(Name?.ToString()))
                     return "<unknown>";
                 else
-                    return Name;
+                    return Name.ToString();
             }
             set { }
         }
 
         public List<Tuple<string, int>> DebugInfo = new List<Tuple<string, int>>();
 
-        public Vehicle(int Id)
+        public Vehicle(int id)
         {
-            this.Id = Id;
+            Id = id;
+        }
+        public Vehicle()
+        {
+
         }
         static Vehicle()
         {
@@ -93,12 +105,12 @@ namespace OpenTTDTool.Entities
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Type: {this.GetType().Name}, Name: {Name}({this.DebugInfo.FirstOrDefault(d => d.Item1 == "Name")?.Item2})");
+            var sb = new StringBuilder();
+            sb.AppendLine($"Type: {GetType().Name}, Name: {Name}({DebugInfo.FirstOrDefault(d => d.Item1 == "Name")?.Item2})");
             sb.AppendLine($"\tRaw data (unused hidden) :");
-            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite && this.DebugInfo.Any(d => d.Item1 == p.Name)))
+            foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => p.CanWrite && DebugInfo.Any(d => d.Item1 == p.Name)))
             {
-                sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)} (row: {this.DebugInfo.FirstOrDefault(p => p.Item1 == prop.Name)?.Item2 })");
+                sb.AppendLine($"\t\t{prop.Name}: {prop.GetValue(this)} (row: {DebugInfo.FirstOrDefault(p => p.Item1 == prop.Name)?.Item2 })");
             }
             sb.AppendLine($"\tCalculated :");
             foreach (var prop in GetType().GetProperties().OrderBy(p => p.Name).Where(p => !p.CanWrite))

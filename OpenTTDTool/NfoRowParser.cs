@@ -36,6 +36,12 @@ namespace OpenTTDTool
         {
             ParsedText = FullText.SplitWithQuotes(" ", "\t");
 
+            if (ParsedText.Count < Constants.MIN_NUMBER_OF_ELEMENTS)
+            {
+                Ignore = true;
+                return;
+            }
+
             var analyzer = AnalyzerFactory.CreateInstance(ParsedText);
             if (analyzer == null)
             {
